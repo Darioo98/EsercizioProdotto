@@ -14,5 +14,6 @@ public interface ProdottoRepository extends JpaRepository<Prodotto, Long> {
     List<Prodotto> findByDatascadenzaBetween(Date dataDa, Date dataA);
     List<Prodotto> findByPriceBetween(float minimo,float max);
     List<Prodotto> findByPriceLessThan(float max);
+    List<Prodotto> findByNome(String nome);
 
 }

@@ -33,16 +33,29 @@ public class ProdottoController {
     public Prodotto searchProductWithID(@PathVariable Long id) {
         return repository.findById(id).orElseThrow(() -> new ProdottoNonTrovato(id));
     }
+    @GetMapping("/prodottoNome")
+    public List<Prodotto> searchProductWithName(@RequestParam (name= "nome") String nome) {
+        return repository.findByNome(nome);
+    }
 
     @PostMapping("/prodotto")
     public Prodotto insertNewProduct(@RequestBody Prodotto newProduct) {
         return repository.save(newProduct);
     }
 
-    @PutMapping("/prodotto")
-    public Prodotto updateProduct( @RequestBody Prodotto prodotto)
-    {
-        return repository.save(prodotto);
+    @PutMapping("/prodotto/{id}")
+    public Prodotto updateProduct( @RequestBody Prodotto prodotto, @PathVariable Long id ){
+        return repository.findById(id).map(product ->{
+            product.setNome(prodotto.getNome());
+            product.setDataacquisto(prodotto.getDataacquisto());
+            product.setDatascadenza(prodotto.getDatascadenza());
+            product.setPrice(prodotto.getPrice());
+            product.setGradi(prodotto.getGradi());
+            return repository.save(product);
+        }).orElseGet(()-> {
+prodotto.setId(id);
+return repository.save(prodotto);
+        });
 
     }
 
@@ -62,7 +75,7 @@ public class ProdottoController {
     @GetMapping("/prodotto/ricercadatascadenza")
     public List<Prodotto> searchForDateOfExpiration(@RequestParam(name="dataDa") @DateTimeFormat(pattern= "dd-MM-yyyy")
                                                               Date dataDa,
-                                                      @RequestParam(name="datAa") @DateTimeFormat(pattern= "dd-MM-yyyy")
+                                                      @RequestParam(name="dataA") @DateTimeFormat(pattern= "dd-MM-yyyy")
                                                               Date dataA){
         return repository.findByDatascadenzaBetween(dataDa,dataA);
     }
